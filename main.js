@@ -1,65 +1,84 @@
-const express = require("express");
-const axios = require("axios");
+const { initialBrowser } = require("./helpers/initialBrowser");
+const { loginPoe } = require("./modules/loginPoe");
+const { destroyBrowser } = require("./helpers/destroyBrowser");
+const { getAnswer } = require("./modules/getAnswer");
+const { insertAccount } = require("./db/account");
+const express = require("express")();
 
-const { serverPorts } = require("./constants");
-const { execPromise } = require("./modules/execPromise");
+let isProcessingRequest = false;
+const requestQueue = [];
 
-const app = express();
-let currentIndex = 0;
+const setupBrowser = async () => {
+  while (true) {
+    let browser;
 
-app.use(express.json());
+    try {
+      const [context, initialBrows] = await initialBrowser(true);
+      browser = initialBrows;
 
-app.get("/restart/", async (req, res) => {
-  try {
-    await execPromise("pm2 kill");
+      global.page = await loginPoe(context);
+      global.context = context;
+      global.browser = browser;
 
-    for (const port of serverPorts) {
-      const command = `PORT=${port} pm2 start npm --name "${port}" -- start`;
+      const cookies = await context.cookies();
+      const userAgent = await page.evaluate(() => window.navigator.userAgent);
 
-      console.log(command);
-
-      await execPromise(command);
-    }
-  } catch (e) {
-    console.log(e.message);
-  }
-
-  res.status(200).send("Internal Server Error");
-});
-
-app.all("/answer/*", (req, res) => {
-  let retryCount = 0;
-
-  const sendRequest = () => {
-    const proxyPort = serverPorts[currentIndex];
-    const proxyUrl = `http://localhost:${proxyPort}${req.originalUrl}`;
-    console.log(proxyUrl);
-
-    axios({
-      method: req.method,
-      url: proxyUrl,
-      data: req.body,
-    })
-      .then((response) => {
-        res.status(response.status).send(response.data);
-      })
-      .catch(() => {
-        console.log(retryCount);
-        if (retryCount < 10) {
-          retryCount++;
-          currentIndex = (currentIndex + 1) % serverPorts.length;
-          sendRequest();
-        } else {
-          res.status(500).send("Maximum retries reached");
-        }
+      await insertAccount({
+        cookies,
+        userAgent,
       });
 
-    currentIndex = (currentIndex + 1) % serverPorts.length;
+      break;
+    } catch (e) {
+      console.log(`Ошибка при поднятии браузера: ${e.message}`);
+      await destroyBrowser(browser);
+    }
+  }
+};
+
+const processNextRequest = async () => {
+  if (isProcessingRequest || requestQueue.length === 0) {
+    return;
+  }
+
+  isProcessingRequest = true;
+  const request = requestQueue.shift();
+  try {
+    const response = await getAnswer(global.page, request.dialogue);
+    request.callback(null, response);
+  } catch (error) {
+    request.callback(error, null);
+  } finally {
+    isProcessingRequest = false;
+    processNextRequest();
+  }
+};
+
+express.use("/answer/", async (request, reply) => {
+  if (!global.page) {
+    reply.sendStatus(400);
+    return;
+  }
+
+  const { dialogue = "Сочини рандомную шутку до 50 слов" } = request.query;
+  const callback = (error, response) => {
+    if (error) {
+      reply.sendStatus(400);
+    } else {
+      reply.send(response);
+    }
   };
 
-  sendRequest();
+  requestQueue.push({ dialogue, callback });
+  processNextRequest();
 });
 
-app.listen(80, () => {
-  console.log("Прокси-сервер запущен на порту 80");
+express.listen(process.env.PORT ?? 3000, async (err) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log("Начинаю сетап браузера");
+  await setupBrowser();
+  console.log(`Сервер запущен на адресе ${process.env.PORT ?? 3000}`);
 });
