@@ -16,6 +16,7 @@ class AccountService {
     this.readAccount = this.readAccount.bind(this);
     this.insertAccount = this.insertAccount.bind(this);
     this.updateAccount = this.updateAccount.bind(this);
+    this.readRandomCookie = this.readRandomCookie.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
   }
 
@@ -30,6 +31,17 @@ class AccountService {
     });
     this.db = this.client.db(dbName);
     this.collection = this.db.collection(collectionName);
+  }
+
+  async readRandomCookie() {
+    await this.connect();
+
+    const cookies = await this.collection.distinct("cookies");
+    const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
+
+    const randomIndex = Math.floor(Math.random() * native.length);
+
+    return native[randomIndex];
   }
 
   // метод для получения всех аккантов
@@ -56,7 +68,7 @@ class AccountService {
   // метод для обновления данных аккаунта
   async updateAccount(username, updatedData) {
     await this.connect();
-    
+
     await this.collection.updateOne({ username }, { $set: updatedData });
   }
 

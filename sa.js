@@ -8,7 +8,7 @@ async function makeRequests() {
   for (let i = 0; i < 100; i++) {
     requestPromises.push(
       axios.get(
-        "http://95.163.229.224/answer/?dialogue=придумай уникальное приветствие как гопота"
+        "http://localhost/answer/?dialogue=напиши привет"
       )
     );
   }

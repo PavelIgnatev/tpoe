@@ -1,18 +1,10 @@
 const getResponse = async (page, message) => {
   const textarea = await page.waitForSelector(
-    'textarea[placeholder="Talk to Sage on Poe"]'
+    'textarea[placeholder="Talk to Sage on Poe"]',
+    { state: "attached" }
   );
   await textarea.fill(`            ${message}`);
   await page.keyboard.press("Enter");
-
-  await page.waitForTimeout(1000);
-  const element = await page.$(
-    `div[class^="ChatMessagesView_messagePair"]:has-text("failed to send.") div[class^="Markdown_markdownContainer"]`
-  );
-
-  if (element) {
-    throw new Error("Failed send");
-  }
 
   await page.waitForSelector('button:has-text("Tell me more")');
 
@@ -37,11 +29,16 @@ const getResponse = async (page, message) => {
 const getAnswer = async (page, message) => {
   while (true) {
     try {
+      await page.waitForLoadState("networkidle");
+
+      page.on("console", (message) => {
+        if (message.type() === "error") {
+          return "";
+        }
+      });
       return await getResponse(page, message);
     } catch (e) {
-      console.log(e.message);
       await page.reload();
-      await page.waitForLoadState("networkidle");
       throw new Error(e.message);
     }
   }
