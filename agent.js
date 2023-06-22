@@ -13,7 +13,7 @@ const setupBrowser = async () => {
     let browser;
 
     try {
-      const [context, initialBrows] = await initialBrowser(true);
+      const [context, initialBrows] = await initialBrowser(false);
       browser = initialBrows;
 
       global.page = await loginPoe(context);

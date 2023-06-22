@@ -21,6 +21,11 @@ const initialBrowser = async (headless) => {
     userAgent: new UserAgent({ deviceCategory: "desktop" }).toString(),
     permissions: ["notifications", "microphone", "camera"],
     cursor: "default",
+    proxy: {
+      server: "95.215.71.191:40018",
+      username: "647d6529f5",
+      password: "96bd465f6b",
+    },
   });
 
   return [context, browser];

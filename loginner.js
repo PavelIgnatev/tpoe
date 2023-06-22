@@ -2,6 +2,7 @@ const { initialBrowser } = require("./helpers/initialBrowser");
 const { loginPoe } = require("./modules/loginPoe");
 const { destroyBrowser } = require("./helpers/destroyBrowser");
 const { insertAccount } = require("./db/account");
+const { default: axios } = require("axios");
 
 const setupBrowser = async () => {
   while (true) {
@@ -33,6 +34,11 @@ const setupBrowser = async () => {
 };
 
 const main = async () => {
+  setTimeout(() => {
+    axios.get(
+      "https://frigate-proxy.ru/ru/change_ip/af6e30706dee6cfc01e52d7b73944d60/998524"
+    );
+  }, 120000);
   await setupBrowser();
 };
 
