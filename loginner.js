@@ -28,9 +28,6 @@ const setupBrowser = async () => {
       await destroyBrowser(browser);
     } catch (e) {
       console.log(`Ошибка при поднятии браузера: ${e.message}`);
-      await axios.get(
-        "https://frigate-proxy.ru/ru/change_ip/af6e30706dee6cfc01e52d7b73944d60/998524"
-      );
       await destroyBrowser(browser);
     }
   }
