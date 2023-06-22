@@ -39,7 +39,7 @@ const main = async () => {
     axios.get(
       "https://frigate-proxy.ru/ru/change_ip/af6e30706dee6cfc01e52d7b73944d60/998524"
     );
-  }, 30000);
+  }, 60000);
   await setupBrowser();
 };
 
