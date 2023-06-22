@@ -22,20 +22,10 @@ const setupBrowser = async () => {
 
       const cookies = await context.cookies();
       const userAgent = await page.evaluate(() => window.navigator.userAgent);
-      const localStorage = await page.evaluate(() => {
-        const data = {};
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          const value = localStorage.getItem(key);
-          data[key] = value;
-        }
-        return data;
-      });
 
       await insertAccount({
         cookies,
         userAgent,
-        localStorage,
       });
 
       break;
