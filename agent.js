@@ -13,7 +13,7 @@ const setupBrowser = async () => {
     let browser;
 
     try {
-      const [context, initialBrows] = await initialBrowser(false);
+      const [context, initialBrows] = await initialBrowser(true);
       browser = initialBrows;
 
       global.page = await loginPoe(context);
@@ -22,7 +22,7 @@ const setupBrowser = async () => {
 
       const cookies = await context.cookies();
       const userAgent = await page.evaluate(() => window.navigator.userAgent);
-      const localStorageData = await page.evaluate(() => {
+      const localStorage = await page.evaluate(() => {
         const data = {};
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
@@ -35,7 +35,7 @@ const setupBrowser = async () => {
       await insertAccount({
         cookies,
         userAgent,
-        localStorage: localStorageData,
+        localStorage,
       });
 
       break;

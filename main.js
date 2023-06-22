@@ -14,7 +14,7 @@ app.get("/restart/", async (req, res) => {
     await execPromise("pm2 kill");
 
     for (const port of serverPorts) {
-      const command = `PORT=${port} pm2 start agent.js -f --name='${port}'`;
+      const command = `PORT=${port} pm2 start npm --name "${port}" -- start`;
 
       console.log(command);
 
@@ -32,7 +32,7 @@ app.all("/answer/*", (req, res) => {
 
   const sendRequest = () => {
     const proxyPort = serverPorts[currentIndex];
-    const proxyUrl = `http://localhost:${proxyPort}${req.originalUrl}?dialogue=Сочини рандомную шутку до 50 слов`;
+    const proxyUrl = `http://localhost:${proxyPort}${req.originalUrl}`;
     console.log(proxyUrl);
 
     axios({
