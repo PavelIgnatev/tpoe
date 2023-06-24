@@ -17,7 +17,9 @@ async function postMessage(cookie, message) {
     await page.goto("https://poe.com/", { waitUntil: "domcontentloaded" });
 
     result = await getAnswer(page, message);
-  } catch {}
+  } catch (e) {
+    console.log(e)
+  }
 
   console.log(result)
 
@@ -51,6 +53,10 @@ app.all("/answer/*", async (req, res) => {
         const cookie = await readRandomCookie();
 
         result = await postMessage(cookie, dialogue);
+
+        if(!result) {
+          throw new Error('Пустой ответ')
+        }
       } catch (err) {
         console.log(`Attempt ${retryCount + 1} failed: ${err}`);
       }
