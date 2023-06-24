@@ -40,7 +40,7 @@ const createPage = async (browser, cookie) => {
 };
 
 app.all("/answer/*", async (req, res) => {
-  const { dialogue = " " } = req.query;
+  const { dialogue = "Напиши привет" } = req.query;
 
   try {
     let result;
