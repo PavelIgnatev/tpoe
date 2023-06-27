@@ -34,8 +34,6 @@ async function makeRequests() {
       }
     });
 
-    console.log(results)
-
     fs.writeFileSync("output.txt", JSON.stringify(results), "utf8");
 
     console.log("Результаты всех запросов:", results);
