@@ -17,6 +17,8 @@ async function makeRequests() {
       return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, формат вывода: имя пользователя: тег или null (в случае, если рода деятельности нет)`;
     });
 
+    console.log(i, lines.length);
+
     requestPromises.push(
       axios.get(`http://localhost/answer/?dialogue=${dialogues}`)
     );
