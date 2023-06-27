@@ -10,8 +10,8 @@ async function makeRequests() {
 
   const requestPromises = [];
 
-  for (let i = 0; i < lines.length; i += 100) {
-    const batch = lines.slice(i, i + 100); 
+  for (let i = 0; i < lines.length; i += 25) {
+    const batch = lines.slice(i, i + 25);
 
     const dialogues = batch.map((line) => {
       return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, формат вывода: имя пользователя: тег или null (в случае, если рода деятельности нет)`;
