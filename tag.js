@@ -10,8 +10,8 @@ async function makeRequests() {
 
   const requestPromises = [];
 
-  for (let i = 0; i < lines.length; i += 3) {
-    const batch = lines.slice(i, i + 3);
+  for (let i = 0; i < lines.length; i += 25) {
+    const batch = lines.slice(i, i + 25);
 
     const dialogues = batch.map((line) => {
       return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, обязательноый формат вывода результата (ничего писать больше не нужно): имя пользователя: тег (один едниственный) или null (в случае, если рода деятельности нет)`;
@@ -23,7 +23,7 @@ async function makeRequests() {
       axios.get(`http://localhost/answer/?dialogue=${dialogues}`)
     );
 
-    if (i % 15 === 0) {
+    if (i % 250 === 0) {
       // Ждем выполнения 10 запросов перед продолжением
       await Promise.all(requestPromises.slice(-10));
     }
