@@ -2,6 +2,7 @@ const express = require("express");
 const { chromium } = require("playwright");
 const { readRandomCookie } = require("./db/account");
 const { getAnswer } = require("./modules/getAnswer");
+const { destroyBrowser } = require("./helpers/destroyBrowser");
 
 let browser;
 const app = express();
@@ -18,10 +19,10 @@ async function postMessage(cookie, message) {
 
     result = await getAnswer(page, message);
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 
-  console.log(result)
+  console.log(result);
 
   await page.close();
 
@@ -29,6 +30,14 @@ async function postMessage(cookie, message) {
 }
 
 const connectBrowser = async () => {
+  if (browser) {
+    try {
+      await browser.close();
+    } catch {
+      console.log("Ошибка при закрытии браузера");
+    }
+  }
+
   browser = await chromium.launch({ headless: true });
 };
 
@@ -54,10 +63,15 @@ app.all("/answer/*", async (req, res) => {
 
         result = await postMessage(cookie, dialogue);
 
-        if(!result) {
-          throw new Error('Пустой ответ')
+        if (!result) {
+          throw new Error("Пустой ответ");
         }
       } catch (err) {
+        console.log(err.message);
+        if (err.message !== "Пустой ответ") {
+          console.log("Делаю реконнект браузера");
+          await connectBrowser();
+        }
         console.log(`Attempt ${retryCount + 1} failed: ${err}`);
       }
       retryCount++;
