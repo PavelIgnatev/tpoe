@@ -10,22 +10,22 @@ async function makeRequests() {
 
   const requestPromises = [];
 
-  for (let i = 0; i < lines.length; i += 5) {
-    const batch = lines.slice(i, i + 5);
-
-    const dialogues = batch.map((line) => {
-      return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, обязательноый формат вывода результата (ничего писать больше не нужно): имя пользователя: тег (один едниственный) или null (в случае, если рода деятельности нет)`;
-    });
+  for (let i = 0; i < lines.length; i += 25) {
+    const batch = lines.slice(i, i + 25);
 
     console.log(i, lines.length);
 
     requestPromises.push(
-      axios.get(`http://localhost/answer/?dialogue=${dialogues}`)
+      axios.post("http://localhost/answer/", {
+        dialogue: `Какой род деятельности связан с: \n ${batch.join(
+          ";\n"
+        )}; \n Пезультат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, обязательноый формат вывода результата (ничего писать больше не нужно): имя пользователя: тег (один едниственный) или null (в случае, если рода деятельности нет)`,
+      })
     );
 
-    if (i % 50 === 0) {
+    if (i % 1000 === 0) {
       // Ждем выполнения 10 запросов перед продолжением
-      await Promise.all(requestPromises.slice(-10));
+      await Promise.all(requestPromises.slice(-40));
     }
   }
 

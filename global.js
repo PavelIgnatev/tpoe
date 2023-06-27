@@ -51,7 +51,7 @@ const createPage = async (browser, cookie) => {
 };
 
 app.all("/answer/*", async (req, res) => {
-  const { dialogue = "Напиши привет" } = req.query;
+  const { dialogue = "Напиши привет" } = req.body;
 
   try {
     let result;
