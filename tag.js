@@ -23,9 +23,9 @@ async function makeRequests() {
       })
     );
 
-    if (i % 1000 === 0) {
+    if (i % 250 === 0) {
       // Ждем выполнения 10 запросов перед продолжением
-      await Promise.all(requestPromises.slice(-40));
+      await Promise.all(requestPromises.slice(-10));
     }
   }
 
