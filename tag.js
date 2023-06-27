@@ -10,11 +10,11 @@ async function makeRequests() {
 
   const requestPromises = [];
 
-  for (let i = 0; i < lines.length; i += 25) {
-    const batch = lines.slice(i, i + 25);
+  for (let i = 0; i < lines.length; i += 3) {
+    const batch = lines.slice(i, i + 3);
 
     const dialogues = batch.map((line) => {
-      return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, формат вывода: имя пользователя: тег или null (в случае, если рода деятельности нет)`;
+      return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, обязательноый формат вывода результата (ничего писать больше не нужно): имя пользователя: тег (один едниственный) или null (в случае, если рода деятельности нет)`;
     });
 
     console.log(i, lines.length);
@@ -22,6 +22,11 @@ async function makeRequests() {
     requestPromises.push(
       axios.get(`http://localhost/answer/?dialogue=${dialogues}`)
     );
+
+    if (i % 15 === 0) {
+      // Ждем выполнения 10 запросов перед продолжением
+      await Promise.all(requestPromises.slice(-10));
+    }
   }
 
   try {
@@ -36,7 +41,7 @@ async function makeRequests() {
       }
     });
 
-    fs.writeFileSync("output.txt", JSON.stringify(results), "utf8");
+    fs.writeFileSync("output.txt", results.join("\n"), "utf8");
 
     console.log("Результаты всех запросов:", results);
   } catch (error) {
