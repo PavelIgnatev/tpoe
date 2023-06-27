@@ -11,7 +11,7 @@ async function makeRequests() {
   const requestPromises = [];
 
   for (let i = 0; i < lines.length; i += 100) {
-    const batch = lines.slice(i, i + 100); // Берем 100 элементов из индекса lines
+    const batch = lines.slice(i, i + 100); 
 
     const dialogues = batch.map((line) => {
       return `Какой род деятельности связан с ${line.trim()}; результат выводи в виде 1 слова по пользователю, если не определено - пиши не определено, формат вывода: username: "тег или null"`;
