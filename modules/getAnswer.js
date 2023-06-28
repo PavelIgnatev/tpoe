@@ -6,9 +6,9 @@ const getResponse = async (page, message) => {
   await textarea.fill(`            ${message}`);
   await page.keyboard.press("Enter");
 
-  await page.waitForSelector('button:has-text("Tell me more")');
-
-  await page.waitForTimeout(1500);
+  await page.waitForSelector('button:has-text("Tell me more")', {
+    timeout: 60000,
+  });
 
   const elements = await page.$$(
     'div[class^="ChatMessagesView_messagePair"] div[class^="Markdown_markdownContainer"]'
