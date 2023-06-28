@@ -8,6 +8,8 @@ const getResponse = async (page, message) => {
 
   await page.waitForSelector('button:has-text("Tell me more")');
 
+  await page.waitForTimeout(1500);
+
   const elements = await page.$$(
     'div[class^="ChatMessagesView_messagePair"] div[class^="Markdown_markdownContainer"]'
   );
@@ -38,6 +40,7 @@ const getAnswer = async (page, message) => {
       });
       return await getResponse(page, message);
     } catch (e) {
+      console.log(e);
       await page.reload();
       throw new Error(e.message);
     }
