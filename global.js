@@ -38,7 +38,7 @@ const connectBrowser = async () => {
     }
   }
 
-  browser = await chromium.launch({ headless: false });
+  browser = await chromium.launch({ headless: true });
 };
 
 const createPage = async (browser, cookie) => {
