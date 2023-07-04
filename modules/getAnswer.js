@@ -1,14 +1,21 @@
-const getResponse = async (page, message) => {
+const getResponse = async (page, messages) => {
   const textarea = await page.waitForSelector(
     'textarea[placeholder="Talk to Sage on Poe"]',
     { state: "attached" }
   );
-  await textarea.fill(`            ${message}`);
-  await page.keyboard.press("Enter");
 
-  await page.waitForSelector('button:has-text("Tell me more")', {
-    timeout: 60000,
-  });
+  for (const message of messages) {
+    await textarea.fill(`            ${message}`);
+    await page.keyboard.press("Enter");
+
+    await page.waitForSelector('button:has-text("Tell me more")', {
+      timeout: 60000,
+    });
+
+    if(messages.length > 1) {
+      await page.waitForTimeout(5000)
+    }
+  }
 
   const elements = await page.$$(
     'div[class^="ChatMessagesView_messagePair"] div[class^="Markdown_markdownContainer"]'
