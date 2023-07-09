@@ -5,7 +5,7 @@ const getResponse = async (page, messages) => {
   );
 
   for (const message of messages) {
-    await textarea.fill(`            ${message}`);
+    await textarea.fill(`            ${message.slice(-5000)}`);
     await page.keyboard.press("Enter");
 
     await page.waitForSelector('button:has-text("Tell me more")', {
