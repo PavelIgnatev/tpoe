@@ -38,11 +38,19 @@ const connectBrowser = async () => {
     }
   }
 
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({ headless: false });
 };
 
 const createPage = async (browser, cookie) => {
-  const context = await browser.newContext();
+  const context = await browser.newContext({
+    cursor: "default",
+    proxy: {
+      server: "45.157.36.134:8000",
+      username: "tbc7GV",
+      password: "tnt2QK",
+    },
+  });
+
   const page = await context.newPage();
 
   await context.addCookies([cookie]);

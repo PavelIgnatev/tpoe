@@ -51,7 +51,7 @@ const loginPoe = async (context) => {
 
   await inputCode.fill(String(code), { delay: 100 });
   await poePage.keyboard.press("Enter");
-  await poePage.waitForSelector('textarea[placeholder="Talk to Sage on Poe"]', {
+  await poePage.waitForSelector('textarea[placeholder="Talk to Assistant on Poe"]', {
     timeout: 7500,
   });
 
