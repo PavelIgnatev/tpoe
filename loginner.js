@@ -51,7 +51,7 @@ const main = async () => {
 
     const promises = [];
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 5; i++) {
       promises.push(setupBrowser());
     }
 
