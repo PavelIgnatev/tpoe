@@ -1,40 +1,62 @@
 const { initialBrowser } = require("./helpers/initialBrowser");
 const { loginPoe } = require("./modules/loginPoe");
-const { destroyBrowser } = require("./helpers/destroyBrowser");
 const { insertAccount } = require("./db/account");
-const { default: axios } = require("axios");
+const UserAgent = require("user-agents");
 
 const setupBrowser = async () => {
-  while (true) {
-    let browser;
-    console.log("Начинаю поднимать браузер");
+  console.log("Начинаю поднимать браузер");
+  let page;
+  let context;
 
-    try {
-      const [context, initialBrows] = await initialBrowser(true);
-      browser = initialBrows;
+  try {
+    context = await global.browser.newContext({
+      userAgent: new UserAgent({ deviceCategory: "desktop" }).toString(),
+      permissions: ["notifications", "microphone", "camera"],
+      cursor: "default",
+      proxy: {
+        server: "45.157.36.134:8000",
+        username: "tbc7GV",
+        password: "tnt2QK",
+      },
+    });
 
-      global.page = await loginPoe(context);
-      global.context = context;
-      global.browser = browser;
+    page = await loginPoe(context);
 
-      const cookies = await context.cookies();
-      const userAgent = await page.evaluate(() => window.navigator.userAgent);
+    const cookies = await context.cookies();
+    const userAgent = await page.evaluate(() => window.navigator.userAgent);
 
-      await insertAccount({
-        cookies,
-        userAgent,
-      });
-      console.log("Браузер поднят");
-      await destroyBrowser(browser);
-    } catch (e) {
-      console.log(`Ошибка при поднятии браузера: ${e.message}`);
-      await destroyBrowser(browser);
+    await insertAccount({
+      cookies,
+      userAgent,
+    });
+
+    await page.close();
+    await context.close();
+  } catch (e) {
+    console.log(`Ошибка при выполнении скрипта: ${e.message}`);
+    if (page) {
+      await page.close();
+    }
+    if (context) {
+      await context.close();
     }
   }
 };
 
 const main = async () => {
-  await setupBrowser();
+  while (true) {
+    console.log("Начинаю поднимать браузер");
+    const [initBrowser] = await initialBrowser(true);
+    global.browser = initBrowser;
+
+    const promises = [];
+
+    for (let i = 0; i < 50; i++) {
+      promises.push(setupBrowser());
+    }
+
+    await Promise.all(promises);
+  }
 };
 
 main();

@@ -5,7 +5,7 @@ async function makeRequests() {
 
   const requestPromises = [];
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 5; i++) {
     requestPromises.push(
       axios.get(
         "http://localhost/answer/?dialogue=напиши привет"
