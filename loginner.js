@@ -13,17 +13,19 @@ const setupBrowser = async () => {
       userAgent: new UserAgent({ deviceCategory: "desktop" }).toString(),
       permissions: ["notifications", "microphone", "camera"],
       cursor: "default",
-      proxy: {
-        server: "45.157.36.134:8000",
-        username: "tbc7GV",
-        password: "tnt2QK",
-      },
+      // proxy: {
+      //   server: "46.8.31.137:40037",
+      //   username: "b069646704",
+      //   password: "d96b970906",
+      // },
     });
 
     page = await loginPoe(context);
 
     const cookies = await context.cookies();
     const userAgent = await page.evaluate(() => window.navigator.userAgent);
+
+    await page.waitForTimeout(5000)
 
     await insertAccount({
       cookies,
@@ -46,7 +48,7 @@ const setupBrowser = async () => {
 const main = async () => {
   while (true) {
     console.log("Начинаю поднимать браузер");
-    const [initBrowser] = await initialBrowser(true);
+    const [initBrowser] = await initialBrowser(false);
     global.browser = initBrowser;
 
     const promises = [];
