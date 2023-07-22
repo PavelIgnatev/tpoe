@@ -38,9 +38,9 @@ class AccountService {
   async readRandomCookie() {
     await this.connect();
 
-    const cookies = await this.collection.distinct("cookies");
+    const accounts = await this.collection.find({ working: true }).toArray();
+    const cookies = accounts.map((account) => account.cookies).flat();
     const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
-
     const randomIndex = Math.floor(Math.random() * native.length);
 
     return native[randomIndex];

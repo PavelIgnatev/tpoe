@@ -43,10 +43,10 @@ async function checkAccount(browser, cookie) {
 let i = 0;
 
 const checker = async () => {
-  const result = await readCookies();
+  const result = (await readCookies()).slice(3500);
   const [browser] = await initialBrowser(true);
 
-  for (const cookie of result) {
+  for (const cookie of result.reverse()) {
     console.log(i, result.length);
     await checkAccount(browser, cookie);
     i += 1;

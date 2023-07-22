@@ -2,7 +2,7 @@ const express = require("express");
 const { chromium } = require("playwright");
 const { readRandomCookie } = require("./db/account");
 const { getAnswer } = require("./modules/getAnswer");
-const { destroyBrowser } = require("./helpers/destroyBrowser");
+const { initialBrowser } = require("./helpers/initialBrowser");
 
 let browser;
 const app = express();
@@ -38,11 +38,11 @@ const connectBrowser = async () => {
     }
   }
 
-  browser = await chromium.launch({ headless: false });
+  const [initBrowser] = await initialBrowser(true);
+  browser = initBrowser;
 };
 
 const createPage = async (browser, cookie) => {
-
   const context = await browser.newContext({
     proxy: {
       server: "45.157.36.134:8000",
