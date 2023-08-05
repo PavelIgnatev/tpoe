@@ -4,38 +4,42 @@ const { insertAccount } = require("./db/account");
 const UserAgent = require("user-agents");
 
 const setupBrowser = async () => {
-  console.log("Начинаю поднимать браузер");
   let page;
   let context;
 
   try {
     context = await global.browser.newContext({
       userAgent: new UserAgent({ deviceCategory: "desktop" }).toString(),
-      permissions: ["notifications", "microphone", "camera"],
       cursor: "default",
-      // proxy: {
-      //   server: "46.8.31.137:40037",
-      //   username: "b069646704",
-      //   password: "d96b970906",
-      // },
+      proxy: {
+        server: "46.8.31.137:40825",
+        username: "37c27c4c3f",
+        password: "c4fca3752c",
+      },
     });
 
-    page = await loginPoe(context);
+    const [loginPage, email] = await loginPoe(context);
+    page = loginPage;
 
     const cookies = await context.cookies();
     const userAgent = await page.evaluate(() => window.navigator.userAgent);
 
-    await page.waitForTimeout(5000)
-
     await insertAccount({
       cookies,
       userAgent,
+      email,
     });
+
+    console.log(`Аккаунт с почтой ${email} успешно зарегестрирован`);
 
     await page.close();
     await context.close();
   } catch (e) {
-    console.log(`Ошибка при выполнении скрипта: ${e.message}`);
+    if (e.message.includes("net::ERR_PROXY_CONNECTION_FAILED")) {
+      console.log(`Ошибка при выполнении скрипта: смена прокси`);
+    } else {
+      console.log(`Ошибка при выполнении скрипта: ${e.message}`);
+    }
     if (page) {
       await page.close();
     }
@@ -46,18 +50,19 @@ const setupBrowser = async () => {
 };
 
 const main = async () => {
+  const [initBrowser] = await initialBrowser(true);
+  global.browser = initBrowser;
+
   while (true) {
-    console.log("Начинаю поднимать браузер");
-    const [initBrowser] = await initialBrowser(false);
-    global.browser = initBrowser;
+    console.log("Начинаю поднимать страницу");
 
     const promises = [];
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       promises.push(setupBrowser());
     }
 
-    await Promise.all(promises);
+    await Promise.allSettled(promises);
   }
 };
 

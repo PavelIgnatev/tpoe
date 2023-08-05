@@ -25,16 +25,16 @@ async function checkAccount(browser, cookie) {
         ':has-text("reached the daily free message limit."), :has-text("es left today across standard bots.")',
         { timeout: 1000 }
       );
-      await updateAccountByCookie(cookie.value, { working: false });
+      // await updateAccountByCookie(cookie.value, { working: false });
       console.log("акк не в порядке");
     } catch (у) {
-      await updateAccountByCookie(cookie.value, { working: true });
+      // await updateAccountByCookie(cookie.value, { working: true });
 
       console.log("акк в порядке");
     }
   } catch (e) {
     console.log(e);
-    await updateAccountByCookie(cookie.value, { working: false });
+    // await updateAccountByCookie(cookie.value, { working: false });
   }
 
   await page.close();
@@ -44,7 +44,7 @@ let i = 0;
 
 const checker = async () => {
   const result = (await readCookies()).slice(3500);
-  const [browser] = await initialBrowser(true);
+  const [browser] = await initialBrowser(false);
 
   for (const cookie of result.reverse()) {
     console.log(i, result.length);

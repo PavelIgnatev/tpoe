@@ -1,18 +1,18 @@
-const { firefox } = require('playwright-extra');
+const { chromium } = require("playwright-extra");
 const stealth = require("puppeteer-extra-plugin-stealth");
 
 const shromiumStealth = stealth();
 
 shromiumStealth.enabledEvasions.delete("user-agent-override");
-firefox.use(shromiumStealth);
+chromium.use(shromiumStealth);
 
-firefox.plugins.setDependencyDefaults("stealth/evasions/webgl.vendor", {
+chromium.plugins.setDependencyDefaults("stealth/evasions/webgl.vendor", {
   vendor: "Gsad",
   renderer: "dsa",
 });
 
 const initialBrowser = async (headless) => {
-  const browser = await firefox.launch({
+  const browser = await chromium.launch({
     headless,
   });
 
@@ -20,3 +20,4 @@ const initialBrowser = async (headless) => {
 };
 
 module.exports = { initialBrowser };
+

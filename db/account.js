@@ -18,8 +18,9 @@ class AccountService {
     this.readRandomCookie = this.readRandomCookie.bind(this);
     this.readCookies = this.readCookies.bind(this);
     this.updateAccountByCookie = this.updateAccountByCookie.bind(this);
-
+    this.addPrevFieldToAccounts = this.addPrevFieldToAccounts.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
+    this.readAccountEmail = this.readAccountEmail.bind(this);
   }
 
   async connect() {
@@ -38,7 +39,7 @@ class AccountService {
   async readRandomCookie() {
     await this.connect();
 
-    const accounts = await this.collection.find({ working: true }).toArray();
+    const accounts = await this.collection.find({ prev: { $ne: true } }).toArray();
     const cookies = accounts.map((account) => account.cookies).flat();
     const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
     const randomIndex = Math.floor(Math.random() * native.length);
@@ -79,6 +80,12 @@ class AccountService {
     return await this.collection.findOne({ username });
   }
 
+  async readAccountEmail(email) {
+    await this.connect();
+
+    return await this.collection.findOne({ email });
+  }
+
   // метод для добавления аккаунта
   async insertAccount(account) {
     await this.connect();
@@ -97,6 +104,12 @@ class AccountService {
     await this.connect();
 
     await this.collection.deleteOne({ username });
+  }
+
+  async addPrevFieldToAccounts() {
+    await this.connect();
+
+    await this.collection.updateMany({}, { $set: { prev: true } });
   }
 }
 

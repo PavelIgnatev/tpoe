@@ -1,63 +1,158 @@
+const { readAccountEmail } = require("../db/account");
 const { createPage } = require("../helpers/createPage");
 const { extractNumbers } = require("./extructNumbers");
+const fs = require("fs");
+
+function generateRandomString() {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < 15; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
 
 const loginPoe = async (context) => {
-  const poePage = await createPage(context);
-  let email;
-
-  await poePage.goto("https://poe.com/login?redirect_url=%2F");
-
   const tempmailPage = await createPage(context);
 
-  await tempmailPage.goto("https://tempmail.plus/ru/#");
+  // загружаем куки
+  const cookiesData = fs.readFileSync("cookies.json");
+  const cookiess = JSON.parse(cookiesData);
+  await tempmailPage.context().addCookies(cookiess);
 
-  const buttonDomain = await tempmailPage.waitForSelector("#domain");
-  await buttonDomain.click();
-  const buttonAnyPink = await tempmailPage.waitForSelector(
-    'button:has-text("any.pink")'
-  );
-  await buttonAnyPink.click();
+  await tempmailPage.goto("https://premium.emailnator.com/email-generator");
 
-  const inputName = await tempmailPage?.waitForSelector("#pre_button");
+  try {
+    const label1 = await tempmailPage.waitForSelector(
+      'label[for="public-domain-option"]'
+    );
+    const label2 = await tempmailPage.waitForSelector(
+      'label[for="public-gmailplus-option"]'
+    );
+    const label3 = await tempmailPage.waitForSelector(
+      'label[for="private-domain-option"]'
+    );
+    const label4 = await tempmailPage.waitForSelector(
+      'label[for="private-gmailplus-option"]'
+    );
 
-  const inputValue = await inputName?.getProperty("value");
-  const emailFirst = await inputValue?.jsonValue();
-  email = `${emailFirst}@any.pink`;
+    await label1.click();
+    await label2.click();
+    await label3.click();
+    await label4.click();
+  } catch {
+    console.log("Скорее всего куки сломаны - обновляю");
+    const emailInput = await tempmailPage.waitForSelector(
+      'input[name="email"]'
+    );
+    await emailInput.fill("palllkaignatev@gmail.com");
+    const emailPassword = await tempmailPage.waitForSelector(
+      'input[name="password"]'
+    );
+    await emailPassword.fill("nas-pLC-W6a-akK");
+    const button = await tempmailPage.waitForSelector(
+      'button:has-text("Login")'
+    );
+    await button.click();
 
-  await poePage.bringToFront();
+    await tempmailPage.waitForTimeout(3000);
+
+    const currentCookies = await tempmailPage.context().cookies();
+    fs.writeFileSync("cookies.json", JSON.stringify(currentCookies));
+
+    await tempmailPage.waitForTimeout(3000);
+  }
+
+  let generateValue;
+
+  while (!generateValue) {
+    const generateButton = await tempmailPage.waitForSelector(
+      "#generate-button"
+    );
+
+    await generateButton.click();
+
+    await tempmailPage.waitForSelector("#generate-button[disabled]", {
+      state: "hidden",
+    });
+
+    const generateInput = await tempmailPage.waitForSelector(
+      "#generated-email"
+    );
+    const generateInputValue = await generateInput?.getProperty("value");
+    const currentGenerate = await generateInputValue?.jsonValue();
+
+    const isEnabled = await readAccountEmail(currentGenerate);
+
+    if (!isEnabled) {
+      console.log("Аккаунт с почтой", currentGenerate, "отсутствует");
+      generateValue = currentGenerate;
+    } else {
+      console.log("Аккаунт с почтой", currentGenerate, "уже существует");
+    }
+  }
+
+  console.log(`Текущий gmail для регистрации: ${generateValue}`);
+
+  const poePage = await createPage(context);
+
+  await poePage.goto("https://poe.com/login?redirect_url=%2F");
+  await poePage.waitForLoadState();
 
   const emailAddress = await poePage.waitForSelector('input[type="email"]');
-  await emailAddress.fill(email, { delay: 100 });
+  await emailAddress.fill(generateValue, { delay: 100 });
   await poePage.keyboard.press("Enter");
+  await poePage.waitForSelector('span[class^="LoadingDots"]', {
+    state: "hidden",
+  });
+
   const inputCode = await poePage.waitForSelector('input[placeholder="Code"]', {
-    timeout: 7500,
+    timeout: 12500,
   });
 
   await tempmailPage.bringToFront();
 
-  const mail = await tempmailPage.waitForSelector(
-    'span:has-text("<noreply@poe.com>")',
-    { timeout: 60000 }
+  await tempmailPage.waitForTimeout(3000);
+
+  const buttonReload = await tempmailPage.waitForSelector(
+    'button:has-text("Reload")'
   );
 
-  await mail.click();
+  await buttonReload.click();
+
+  const poeVerif = await tempmailPage.waitForSelector(
+    'td:has-text("Your verification code")'
+  );
+
+  await poeVerif.click();
 
   const text = await tempmailPage.waitForSelector("tr td");
 
   const content = await text.textContent();
   const code = extractNumbers(content);
 
+  console.log(`Код сообщения от poe: ${code}`);
+
   await poePage.bringToFront();
 
   await inputCode.fill(String(code), { delay: 100 });
   await poePage.keyboard.press("Enter");
-  await poePage.waitForSelector('textarea[placeholder="Talk to Assistant on Poe"]', {
-    timeout: 7500,
-  });
+  await poePage.waitForSelector(
+    'textarea[placeholder="Talk to Assistant on Poe"]',
+    {
+      timeout: 7500,
+    }
+  );
 
   await tempmailPage.close();
 
-  return poePage;
+  return [poePage, generateValue];
 };
 
 module.exports = { loginPoe };
