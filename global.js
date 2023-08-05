@@ -1,5 +1,4 @@
 const express = require("express");
-const { chromium } = require("playwright");
 const { readRandomCookie } = require("./db/account");
 const { getAnswer } = require("./modules/getAnswer");
 const { initialBrowser } = require("./helpers/initialBrowser");
@@ -112,4 +111,24 @@ exec("curl -s https://api.ipify.org", (error, stdout) => {
 
   const ip_address = stdout.trim();
   console.log(`IP-адрес сервера: ${ip_address}`);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Perform any necessary cleanup or logging
+  // ...
+
+  // Exit the process with a non-zero status code
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Promise Rejection:', reason);
+  // Perform any necessary cleanup or logging
+  // ...
+
+  // Exit the process with a non-zero status code
+  process.exit(1);
 });

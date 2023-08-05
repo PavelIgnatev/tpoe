@@ -70,6 +70,7 @@ const loginPoe = async (context) => {
   }
 
   let generateValue;
+  let k = 0;
 
   while (!generateValue) {
     const generateButton = await tempmailPage.waitForSelector(
@@ -95,6 +96,10 @@ const loginPoe = async (context) => {
       generateValue = currentGenerate;
     } else {
       console.log("Аккаунт с почтой", currentGenerate, "уже существует");
+      k += 1;
+      if (k > 5) {
+        throw new Error("Дохуя ретраев");
+      }
     }
   }
 
