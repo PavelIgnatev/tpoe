@@ -6,8 +6,7 @@
     "node": "14.21.1"
   },
   "scripts": {
-    "start": "node global.js",
-    "main": "node --max-old-space-size=1024 main.js"
+    "start": "npx playwright install-deps firefox && node global.js"
   },
   "keywords": [],
   "author": "",
