@@ -113,22 +113,6 @@ exec("curl -s https://api.ipify.org", (error, stdout) => {
   console.log(`IP-адрес сервера: ${ip_address}`);
 });
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  // Perform any necessary cleanup or logging
-  // ...
-
-  // Exit the process with a non-zero status code
-  process.exit(1);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Promise Rejection:', reason);
-  // Perform any necessary cleanup or logging
-  // ...
-
-  // Exit the process with a non-zero status code
-  process.exit(1);
-});
+setInterval(() => {
+  console.log("ну типо сет интервал");
+}, 1000);
