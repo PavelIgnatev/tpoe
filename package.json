@@ -6,7 +6,7 @@
     "node": "14.21.1"
   },
   "scripts": {
-    "start": "node --max-old-space-size=108 --gc_interval=10000 --max-semi-space-size=8 agent.js",
+    "start": "node global.js",
     "main": "node --max-old-space-size=1024 main.js"
   },
   "keywords": [],
