@@ -62,6 +62,7 @@ const createPage = async (browser, cookie) => {
 
 app.all("/answer/*", async (req, res) => {
   const { dialogue = ["Напиши привет"] } = req.body;
+  console.log("Получил запрос, начинаю исполнять");
 
   try {
     let result;
