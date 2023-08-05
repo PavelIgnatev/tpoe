@@ -2,7 +2,6 @@ const express = require("express");
 const { readRandomCookie } = require("./db/account");
 const { getAnswer } = require("./modules/getAnswer");
 const { initialBrowser } = require("./helpers/initialBrowser");
-const { exec } = require("child_process");
 
 let browser;
 const app = express();
@@ -102,17 +101,3 @@ app.listen(80, async () => {
 
   console.log("Прокси-сервер запущен на порту 80");
 });
-
-exec("curl -s https://api.ipify.org", (error, stdout) => {
-  if (error) {
-    console.error(`Ошибка выполнения команды: ${error.message}`);
-    return;
-  }
-
-  const ip_address = stdout.trim();
-  console.log(`IP-адрес сервера: ${ip_address}`);
-});
-
-setInterval(() => {
-  console.log("ну типо сет интервал");
-}, 1000);
