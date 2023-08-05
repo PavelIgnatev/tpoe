@@ -97,7 +97,7 @@ app.all("/answer/*", async (req, res) => {
 });
 
 app.listen(80, async () => {
-  await connectBrowser();
+  // await connectBrowser();
 
   console.log("Прокси-сервер запущен на порту 80");
 });
