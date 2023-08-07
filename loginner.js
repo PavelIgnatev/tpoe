@@ -58,7 +58,7 @@ const setupBrowser = async () => {
 };
 
 const main = async () => {
-  const [initBrowser] = await initialBrowser(false);
+  const [initBrowser] = await initialBrowser(true);
   global.browser = initBrowser;
 
   while (true) {
