@@ -3,21 +3,6 @@ const { createPage } = require("../helpers/createPage");
 const { extractNumbers } = require("./extructNumbers");
 const fs = require("fs");
 
-function generateRandomString() {
-  let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-  for (let i = 0; i < 15; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
 const loginPoe = async (context) => {
   const tempmailPage = await createPage(context);
 

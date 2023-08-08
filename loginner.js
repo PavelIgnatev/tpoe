@@ -3,8 +3,6 @@ const { loginPoe } = require("./modules/loginPoe");
 const { insertAccount } = require("./db/account");
 const UserAgent = require("user-agents");
 
-let errorCount;
-
 const setupBrowser = async () => {
   let page;
   let context;
@@ -37,7 +35,6 @@ const setupBrowser = async () => {
     await page.close();
     await context.close();
   } catch (e) {
-    errorCount += 1;
     if (e.message.includes("net::ERR_PROXY_CONNECTION_FAILED")) {
       console.log(`Ошибка при выполнении скрипта: смена прокси`);
     } else {
@@ -50,9 +47,17 @@ const setupBrowser = async () => {
       await context.close();
     }
 
-    if (errorCount >= 15) {
-      console.log("Убиваю скрипт");
-      process.exit();
+    if (e.message.includes("browser.newContext")) {
+      try {
+        if (global.browser) {
+          await global.browser.close();
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
+
+      const [initBrowser] = await initialBrowser(true);
+      global.browser = initBrowser;
     }
   }
 };
