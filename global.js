@@ -44,11 +44,11 @@ const connectBrowser = async () => {
 const createPage = async (browser, cookie) => {
   const context = await browser.newContext({
     // proxy6 eng
-    // proxy: {
-    //   server: "81.161.63.6:8000",
-    //   username: "BjTuKg",
-    //   password: "n6yrNn",
-    // },
+    proxy: {
+      server: "81.161.63.6:8000",
+      username: "BjTuKg",
+      password: "n6yrNn",
+    },
   });
 
   const page = await context.newPage();
