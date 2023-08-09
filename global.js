@@ -14,7 +14,7 @@ async function postMessage(cookie, message) {
   try {
     page = await createPage(browser, cookie);
 
-    await page.goto("https://poe.com/", { waitUntil: "domcontentloaded" });
+    await page.goto("https://poe.com/ChatGPT", { waitUntil: "domcontentloaded" });
 
     result = await getAnswer(page, message);
   } catch (e) {

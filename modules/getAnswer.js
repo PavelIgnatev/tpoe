@@ -1,6 +1,6 @@
 const getResponse = async (page, messages) => {
   const textarea = await page.waitForSelector(
-    'textarea[placeholder="Talk to Assistant on Poe"]',
+    'textarea[placeholder="Talk to ChatGPT on Poe"]',
     { state: "attached" }
   );
 
