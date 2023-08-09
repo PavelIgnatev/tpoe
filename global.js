@@ -37,18 +37,18 @@ const connectBrowser = async () => {
     }
   }
 
-  const [initBrowser] = await initialBrowser(true);
+  const [initBrowser] = await initialBrowser(false);
   browser = initBrowser;
 };
 
 const createPage = async (browser, cookie) => {
   const context = await browser.newContext({
     // proxy6 eng
-    proxy: {
-      server: "81.161.63.6:8000",
-      username: "BjTuKg",
-      password: "n6yrNn",
-    },
+    // proxy: {
+    //   server: "81.161.63.6:8000",
+    //   username: "BjTuKg",
+    //   password: "n6yrNn",
+    // },
   });
 
   const page = await context.newPage();
@@ -97,7 +97,7 @@ app.all("/answer/*", async (req, res) => {
 });
 
 app.listen(80, async () => {
-  // await connectBrowser();
+  await connectBrowser();
 
   console.log("Прокси-сервер запущен на порту 80");
 });

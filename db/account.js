@@ -9,6 +9,7 @@ class AccountService {
     this.client = null;
     this.db = null;
     this.collection = null;
+    this.cookies = null;
 
     this.connect = this.connect.bind(this);
     this.readAccounts = this.readAccounts.bind(this);
@@ -39,12 +40,17 @@ class AccountService {
   async readRandomCookie() {
     await this.connect();
 
-    const accounts = await this.collection.find({ prev: { $ne: true } }).toArray();
-    const cookies = accounts.map((account) => account.cookies).flat();
-    const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
-    const randomIndex = Math.floor(Math.random() * native.length);
+    if (!this.cookies) {
+      const cookies = await this.collection.distinct("cookies", {
+        prev: { $ne: true },
+      });
+      const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
+      this.cookies = native;
+    }
 
-    return native[randomIndex];
+    const randomIndex = Math.floor(Math.random() * this.cookies.length);
+
+    return this.cookies[randomIndex];
   }
 
   async readCookies() {
