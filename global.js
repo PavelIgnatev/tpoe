@@ -69,6 +69,7 @@ app.all("/answer/*", async (req, res) => {
     while (!Boolean(result) && retryCount < 5) {
       try {
         const cookie = await readRandomCookie();
+        console.log(cookie)
 
         result = await postMessage(cookie, dialogue);
 
