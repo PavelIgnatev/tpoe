@@ -2,6 +2,8 @@ const { initialBrowser } = require("./helpers/initialBrowser");
 const { loginPoe } = require("./modules/loginPoe");
 const { insertAccount } = require("./db/account");
 const UserAgent = require("user-agents");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 const setupBrowser = async () => {
   let page;
@@ -63,10 +65,10 @@ const setupBrowser = async () => {
 };
 
 const main = async () => {
-  const [initBrowser] = await initialBrowser(true);
-  global.browser = initBrowser;
+  try {
+    const [initBrowser] = await initialBrowser(true);
+    global.browser = initBrowser;
 
-  while (true) {
     console.log("Начинаю поднимать страницу");
 
     const promises = [];
@@ -76,6 +78,9 @@ const main = async () => {
     }
 
     await Promise.allSettled(promises);
+    await exec("pm2 restart 0");
+  } catch {
+    await exec("pm2 restart 0");
   }
 };
 

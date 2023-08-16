@@ -122,6 +122,8 @@ const loginPoe = async (context) => {
 
   await poeVerif.click();
 
+  await tempmailPage.waitForTimeout(3000);
+
   const text = await tempmailPage.waitForSelector("tr td");
 
   const content = await text.textContent();
@@ -134,7 +136,7 @@ const loginPoe = async (context) => {
   await inputCode.fill(String(code), { delay: 100 });
   await poePage.keyboard.press("Enter");
   await poePage.waitForSelector(
-    'textarea[placeholder="Talk to Assistant on Poe"]',
+    'textarea[placeholder="Start a new chat"]',
     {
       timeout: 7500,
     }
