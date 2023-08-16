@@ -12,8 +12,8 @@ const getResponse = async (page, messages) => {
       timeout: 60000,
     });
 
-    if(messages.length > 1) {
-      await page.waitForTimeout(5000)
+    if (messages.length > 1) {
+      await page.waitForTimeout(5000);
     }
   }
 
@@ -47,6 +47,8 @@ const getAnswer = async (page, message) => {
       });
       return await getResponse(page, message);
     } catch (e) {
+      await page.screenshot({ path: "screenshot.png" });
+
       console.log(e);
       await page.reload();
       throw new Error(e.message);
