@@ -78,9 +78,9 @@ const main = async () => {
     }
 
     await Promise.allSettled(promises);
-    await exec("pm2 restart 0");
+    await exec("pm2 restart 2");
   } catch {
-    await exec("pm2 restart 0");
+    await exec("pm2 restart 2");
   }
 };
 
