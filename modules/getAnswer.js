@@ -1,10 +1,9 @@
 const getResponse = async (page, messages) => {
-  const textarea = await page.waitForSelector(
-    'textarea[placeholder="Talk to ChatGPT on Poe"]',
-    { state: "attached" }
-  );
-
   for (const message of messages) {
+    const textarea = await page.waitForSelector(
+      'textarea[placeholder="Talk to ChatGPT on Poe"]',
+      { state: "attached" }
+    );
     await textarea.fill(`            ${message.slice(-4500)}`);
     await page.keyboard.press("Enter");
 
