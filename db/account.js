@@ -41,10 +41,15 @@ class AccountService {
     await this.connect();
 
     if (!this.cookies) {
-      const cookies = await this.collection.distinct("cookies", {
-        prev: { $ne: true },
+      const pipeline = [
+        { $match: { prev: { $ne: true } } },
+        { $sample: { size: 1000 } },
+      ];
+
+      const result = await this.collection.aggregate(pipeline).toArray();
+      const native = result.map((cookie) => {
+        return cookie.cookies.filter((e) => e["name"] === "p-b")[0];
       });
-      const native = cookies.filter((cookie) => cookie["name"].includes("p-b"));
       this.cookies = native;
     }
 
