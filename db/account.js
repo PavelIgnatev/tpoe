@@ -22,6 +22,7 @@ class AccountService {
     this.addPrevFieldToAccounts = this.addPrevFieldToAccounts.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
     this.readAccountEmail = this.readAccountEmail.bind(this);
+    this.deleteAccountById = this.deleteAccountById.bind(this);
   }
 
   async connect() {
@@ -48,7 +49,10 @@ class AccountService {
 
       const result = await this.collection.aggregate(pipeline).toArray();
       const native = result.map((cookie) => {
-        return cookie.cookies.filter((e) => e["name"] === "p-b")[0];
+        return {
+          id: cookie._id, // Добавляем идентификатор куки
+          cookie: cookie.cookies.find((e) => e["name"] === "p-b"),
+        };
       });
       this.cookies = native;
     }
@@ -115,6 +119,12 @@ class AccountService {
     await this.connect();
 
     await this.collection.deleteOne({ username });
+  }
+
+  async deleteAccountById(id) {
+    await this.connect();
+
+    await this.collection.deleteOne({ _id: id });
   }
 
   async addPrevFieldToAccounts() {

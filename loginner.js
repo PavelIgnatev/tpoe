@@ -66,7 +66,7 @@ const setupBrowser = async () => {
 
 const main = async () => {
   try {
-    const [initBrowser] = await initialBrowser(false);
+    const [initBrowser] = await initialBrowser(true);
     global.browser = initBrowser;
 
     console.log("Начинаю поднимать страницу");

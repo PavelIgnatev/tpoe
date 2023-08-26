@@ -46,9 +46,6 @@ const getAnswer = async (page, message) => {
       });
       return await getResponse(page, message);
     } catch (e) {
-      await page.screenshot({ path: "screenshot.png" });
-
-      console.log(e);
       await page.reload();
       throw new Error(e.message);
     }

@@ -1,7 +1,9 @@
 const express = require("express");
-const { readRandomCookie } = require("./db/account");
+const { readRandomCookie, deleteAccountById } = require("./db/account");
 const { getAnswer } = require("./modules/getAnswer");
 const { initialBrowser } = require("./helpers/initialBrowser");
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 let browser;
 const app = express();
@@ -14,14 +16,16 @@ async function postMessage(cookie, message) {
   try {
     page = await createPage(browser, cookie);
 
-    await page.goto("https://poe.com/ChatGPT", { waitUntil: "domcontentloaded" });
+    await page.goto("https://poe.com/ChatGPT", {
+      waitUntil: "domcontentloaded",
+    });
 
     result = await getAnswer(page, message);
   } catch (e) {
-    console.log(e);
+    console.log(`Во время исполнения запроса произошлаа ошибка: ${e.message}`);
   }
 
-  console.log(result);
+  console.log(`Ответ: ${result}`);
 
   await page.close();
 
@@ -68,22 +72,23 @@ app.all("/answer/*", async (req, res) => {
 
     while (!Boolean(result) && retryCount < 5) {
       try {
-        const cookie = await readRandomCookie();
-        console.log(cookie)
+        const { id, cookie } = await readRandomCookie();
 
-        result = await postMessage(cookie, dialogue);
+        try {
+          result = await postMessage(cookie, dialogue);
 
-        if (!result) {
-          throw new Error("Пустой ответ");
-        }
-      } catch (err) {
-        console.log(err.message);
-        if (err.message !== "Пустой ответ") {
-          console.log("Делаю реконнект браузера");
+          if (!result) {
+            await deleteAccountById(id);
+            throw new Error("Пустой ответ");
+          }
+        } catch (err) {
           await connectBrowser();
+          console.log(`Attempt ${retryCount + 1} failed: ${err.message}`);
         }
-        console.log(`Attempt ${retryCount + 1} failed: ${err}`);
+      } catch (e) {
+        console.log(`Глобальная ошибка при получении куки: ${e.message}`);
       }
+
       retryCount++;
     }
 
@@ -99,6 +104,10 @@ app.all("/answer/*", async (req, res) => {
 
 app.listen(80, async () => {
   await connectBrowser();
+
+  setTimeout(async () => {
+    await exec("pm2 restart global");
+  }, 3600000);
 
   console.log("Прокси-сервер запущен на порту 80");
 });
