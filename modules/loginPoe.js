@@ -1,4 +1,4 @@
-const { readAccountEmail } = require("../db/account");
+const { readAccountEmail } = require("../db/newAccount");
 const { createPage } = require("../helpers/createPage");
 const { extractNumbers } = require("./extructNumbers");
 const fs = require("fs");
@@ -26,11 +26,19 @@ const loginPoe = async (context) => {
     const label4 = await tempmailPage.waitForSelector(
       'label[for="private-gmailplus-option"]'
     );
+    const label5 = await tempmailPage.waitForSelector(
+      'label[for="public-gmaildot-option"]'
+    );
+    const label6 = await tempmailPage.waitForSelector(
+      'label[for="private-gmaildot-option"]'
+    );
 
     await label1.click();
     await label2.click();
     await label3.click();
     await label4.click();
+    await label5.click();
+    await label6.click();
   } catch {
     console.log("Скорее всего куки сломаны - обновляю");
     const emailInput = await tempmailPage.waitForSelector(
@@ -55,7 +63,6 @@ const loginPoe = async (context) => {
   }
 
   let generateValue;
-  let k = 0;
 
   while (!generateValue) {
     const generateButton = await tempmailPage.waitForSelector(
@@ -81,10 +88,6 @@ const loginPoe = async (context) => {
       generateValue = currentGenerate;
     } else {
       console.log("Аккаунт с почтой", currentGenerate, "уже существует");
-      k += 1;
-      if (k > 5) {
-        throw new Error("Дохуя ретраев");
-      }
     }
   }
 
@@ -135,12 +138,9 @@ const loginPoe = async (context) => {
 
   await inputCode.fill(String(code), { delay: 100 });
   await poePage.keyboard.press("Enter");
-  await poePage.waitForSelector(
-    'textarea[placeholder="Start a new chat"]',
-    {
-      timeout: 7500,
-    }
-  );
+  await poePage.waitForSelector('textarea[placeholder="Start a new chat"]', {
+    timeout: 7500,
+  });
 
   await tempmailPage.close();
 
