@@ -120,7 +120,8 @@ const loginPoe = async (context) => {
   await buttonReload.click();
 
   const poeVerif = await tempmailPage.waitForSelector(
-    'td:has-text("Your verification code")'
+    'td:has-text("Your verification code")',
+    { timeout: 90000 }
   );
 
   await poeVerif.click();
