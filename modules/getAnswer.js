@@ -16,6 +16,8 @@ const getResponse = async (page, messages) => {
     }
   }
 
+  await page.waitForTimeout(10000);
+
   const elements = await page.$$(
     'div[class^="ChatMessagesView_messagePair"] div[class^="Markdown_markdownContainer"]'
   );
