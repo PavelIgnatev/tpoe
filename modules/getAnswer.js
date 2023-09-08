@@ -1,10 +1,5 @@
 const getResponse = async (page, messages) => {
   for (const message of messages) {
-    await page.waitForSelector('a:has-text("Talk to ChatGPT")', {
-      state: "hidden",
-      timeout: 3000,
-    });
-
     const textarea = await page.waitForSelector(
       'textarea[placeholder="Talk to ChatGPT on Poe"]',
       { state: "attached" }
