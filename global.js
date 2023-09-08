@@ -107,7 +107,7 @@ app.listen(80, async () => {
 
   setTimeout(async () => {
     await exec("pm2 restart global");
-  }, 900000);
+  }, 1800000);
 
   console.log("Прокси-сервер запущен на порту 80");
 });
