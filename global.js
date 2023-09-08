@@ -41,7 +41,7 @@ const connectBrowser = async () => {
     }
   }
 
-  const [initBrowser] = await initialBrowser(true);
+  const [initBrowser] = await initialBrowser(false);
   browser = initBrowser;
 };
 
