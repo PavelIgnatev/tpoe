@@ -1,5 +1,11 @@
 const getResponse = async (page, messages) => {
   for (const message of messages) {
+    await page.waitForTimeout(2500);
+    const fakeExit = await page.$('button[aria-label="close modal"]');
+
+    if (fakeExit) {
+      await fakeExit.click();
+    }
     const textarea = await page.waitForSelector(
       'textarea[placeholder="Talk to ChatGPT on Poe"]',
       { state: "attached" }
